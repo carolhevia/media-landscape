@@ -72,6 +72,7 @@ export default async function handler(req, res) {
           type: multi(p.Type),
           what: rt(p["What they do"]),
           how: rt(p["How / Methodology"]),
+          relevance: rt(p.Relevance),     // why the company matters to Carol; empty for most rows
           presence,                       // Brazilian | LATAM-born | Office in Brazil | Office in LATAM | Sells remotely | Not available
           brazil: brazilNote,             // free-text detail, may be empty
           hq: sel(p["HQ Country"]),
