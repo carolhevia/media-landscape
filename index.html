@@ -168,12 +168,12 @@
 const CAT_COLORS = {
   'Audience & Data Analytics':    {bg:'rgba(71,200,255,0.08)',border:'rgba(71,200,255,0.25)',dot:'#47c8ff'},
   'Attention Measurement':        {bg:'rgba(255,215,71,0.08)',border:'rgba(255,215,71,0.25)',dot:'#ffd747'},
-  'Attribution & MMM':            {bg:'rgba(79,255,176,0.08)',border:'rgba(79,255,176,0.25)',dot:'#4fffb0'},
+  'Measurement Attribution & MMM':{bg:'rgba(79,255,176,0.08)',border:'rgba(79,255,176,0.25)',dot:'#4fffb0'},
   'Media Verification & Quality': {bg:'rgba(255,107,107,0.08)',border:'rgba(255,107,107,0.25)',dot:'#ff6b6b'},
   'Brand Measurement':            {bg:'rgba(255,147,214,0.08)',border:'rgba(255,147,214,0.25)',dot:'#ff93d6'},
   'Identity & Data':              {bg:'rgba(178,147,255,0.08)',border:'rgba(178,147,255,0.25)',dot:'#b293ff'},
   'Clean Room':                   {bg:'rgba(147,255,178,0.08)',border:'rgba(147,255,178,0.25)',dot:'#93ffb2'},
-  'DSP / Programmatic':           {bg:'rgba(255,165,71,0.08)',border:'rgba(255,165,71,0.25)',dot:'#ffa547'},
+  'DSP / SSP / Programmatic':     {bg:'rgba(255,165,71,0.08)',border:'rgba(255,165,71,0.25)',dot:'#ffa547'},
   'CTV & Streaming':              {bg:'rgba(71,147,255,0.08)',border:'rgba(71,147,255,0.25)',dot:'#4793ff'},
   'DOOH & OOH':                   {bg:'rgba(255,215,71,0.08)',border:'rgba(255,215,71,0.25)',dot:'#ffd747'},
   'Audio & Podcast':              {bg:'rgba(147,165,175,0.08)',border:'rgba(147,165,175,0.25)',dot:'#93a5af'},
@@ -203,14 +203,15 @@ let selectedId = null;
 
 function catColor(cat) { return CAT_COLORS[cat] || DEFAULT_COLOR; }
 
+// Active in Brazil = any presence value except "Not available"
+const BRAZIL_PRESENCE = ['Brazilian', 'LATAM-born', 'Office in Brazil', 'Office in LATAM', 'Sells remotely'];
 function hasBrazil(c) {
-  const b = (c.brazil || '').toLowerCase();
-  return b.length > 0 && !b.startsWith('not confirmed') && !b.startsWith('no —') && !b.startsWith('no -');
+  return BRAZIL_PRESENCE.includes(c.presence);
 }
 
 function matchesSearch(c, q) {
   if (!q) return true;
-  const hay = [c.name, c.what, c.how, c.brazil, ...(c.categories||[])].join(' ').toLowerCase();
+  const hay = [c.name, c.what, c.how, c.brazil, c.presence, c.hq, ...(c.categories||[])].join(' ').toLowerCase();
   return hay.includes(q.toLowerCase());
 }
 
@@ -314,7 +315,8 @@ function openDetail(id) {
     const col = catColor(cat);
     return `<span class="card-cat-tag" style="font-size:11px;padding:3px 9px;color:${col.dot};border-color:${col.border};background:${col.bg}">${cat}</span>`;
   }).join('');
-  const brazilHtml = c.brazil ? `<div class="detail-section"><div class="detail-label">🇧🇷 Brazil</div><div class="detail-brazil"><div class="detail-brazil-dot"></div><div class="detail-brazil-text">${c.brazil}</div></div></div>` : '';
+  const brazilText = [c.presence, c.brazil].filter(Boolean).join(' — ');
+  const brazilHtml = brazilText ? `<div class="detail-section"><div class="detail-label">🇧🇷 Brazil</div><div class="detail-brazil"><div class="detail-brazil-dot"></div><div class="detail-brazil-text">${brazilText}${c.hq ? ` · HQ: ${c.hq}` : ''}</div></div></div>` : '';
   const urlHtml = c.url ? `<div class="detail-section detail-url"><a href="${c.url}" target="_blank">↗ ${c.url.replace(/^https?:\/\//,'').replace(/\/$/,'')}</a></div>` : '';
   document.getElementById('detail-panel').innerHTML = `
     <div class="detail-close" onclick="closeDetailBtn()">✕</div>
