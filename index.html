@@ -96,6 +96,8 @@
   .brazil-badge { width: 5px; height: 5px; border-radius: 50%; background: var(--green); flex-shrink: 0; opacity: 0; transition: opacity .15s; }
   .brazil-badge.visible { opacity: 1; }
   .card-what { font-size: 11.5px; color: var(--text2); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-relevance { font-size: 11px; color: var(--text3); line-height: 1.45; margin-top: 6px; padding-left: 8px; border-left: 2px solid var(--border2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-relevance b { font-family: 'DM Mono', monospace; font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-right: 4px; }
   .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
   .card-cat-tag { font-size: 9.5px; font-family: 'DM Mono', monospace; padding: 2px 6px; border-radius: 3px; border: 1px solid; opacity: 0.65; }
 
@@ -211,7 +213,7 @@ function hasBrazil(c) {
 
 function matchesSearch(c, q) {
   if (!q) return true;
-  const hay = [c.name, c.what, c.how, c.brazil, c.presence, c.hq, ...(c.categories||[])].join(' ').toLowerCase();
+  const hay = [c.name, c.what, c.relevance, c.how, c.brazil, c.presence, c.hq, ...(c.categories||[])].join(' ').toLowerCase();
   return hay.includes(q.toLowerCase());
 }
 
@@ -250,6 +252,7 @@ function renderCard(c) {
   return `<div class="company-card ${selectedId===c.id?'selected':''}" onclick="openDetail('${c.id}')">
     <div class="card-name">${c.name}<div class="brazil-badge ${hasBrazil(c)?'visible':''}"></div></div>
     <div class="card-what">${c.what||'—'}</div>
+    ${c.relevance?`<div class="card-relevance"><b>Relevance</b>${c.relevance}</div>`:''}
     <div class="card-tags">${tagHtml}</div>
   </div>`;
 }
@@ -323,6 +326,7 @@ function openDetail(id) {
     <div class="detail-name">${c.name}</div>
     <div class="detail-cats">${catHtml}</div>
     ${c.what?`<div class="detail-section"><div class="detail-label">What they do</div><div class="detail-text">${c.what}</div></div>`:''}
+    ${c.relevance?`<div class="detail-section"><div class="detail-label">Relevance</div><div class="detail-text">${c.relevance}</div></div>`:''}
     ${c.how?`<div class="detail-section"><div class="detail-label">How / Methodology</div><div class="detail-text">${c.how}</div></div>`:''}
     ${brazilHtml}${urlHtml}
     ${c.comments?`<div class="detail-section"><div class="detail-label">Comments</div><div class="detail-text">${c.comments}</div></div>`:''}
